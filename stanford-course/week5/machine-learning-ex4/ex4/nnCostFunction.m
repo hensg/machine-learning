@@ -62,21 +62,46 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
+y_matrix = eye(num_labels)(y,:);
 
+a1 = [ones(m,1) X];
+z2 = a1 * Theta1';
+a2 = sigmoid(z2);
+a2 = [ones(m, 1) a2];
 
+z3 = a2 * Theta2';
+a3 = sigmoid(z3);
 
+be = -y_matrix'*log(a3);
+notbe = (1-y_matrix')*log(1-a3);
 
+J = 1/m * trace(be - notbe);
 
+theta1err = sum(sum(Theta1(:,2:end).^2,2));
+theta2err = sum(sum(Theta2(:,2:end).^2,2));
+sumThetaErr = (theta1err + theta2err);
 
+reg = (lambda / (2 * m)) * sumThetaErr;
 
+J = J + reg;
 
+d3 = (a3 - y_matrix);
 
+d2 = d3 * Theta2(:,2:end) .* sigmoidGradient(z2);
 
+D2 = 1/m * (d2' * a1);
+D3 = 1/m * (d3' * a2);
 
+Theta1_grad = D2;
+Theta2_grad = D3;
 
+Theta1(:,1) = 0;
+Theta2(:,1) = 0;
+Theta1 = (lambda/m) * Theta1;
+Theta2 = (lambda/m) * Theta2;
 
-
-
+Theta1_grad = Theta1_grad + Theta1;
+Theta2_grad = Theta2_grad + Theta2;
 
 % -------------------------------------------------------------
 
